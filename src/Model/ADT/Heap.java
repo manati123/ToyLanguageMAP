@@ -65,6 +65,18 @@ public class Heap<Integer, T1> implements IHeap<Integer, T1>{
     }
 
     @Override
+    public ArrayList<ArrayList<String>> getElementsStrings() {
+        ArrayList<ArrayList<String>> elements = new ArrayList<>();
+        for (Integer key : this.representation.keySet()){
+            ArrayList<String> list = new ArrayList<>();
+            list.add(key.toString());
+            list.add(representation.get(key).toString());
+            elements.add(list);
+        }
+        return elements;
+    }
+
+    @Override
     public void update(Integer key, T1 elem) {
         this.representation.put(key, elem);
     }

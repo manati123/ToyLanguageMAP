@@ -13,6 +13,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Controller {
@@ -103,6 +104,35 @@ public class Controller {
         return inProgramStateList.stream()
                 .filter(ProgramState::BooleanIsNotCompleted)
                 .collect(Collectors.toList());
+    }
+
+    public java.util.List<ProgramState> getCompletedPrograms(java.util.List<ProgramState> inProgramList) {
+        return inProgramList.stream()
+                .filter(Predicate.not(ProgramState::BooleanIsNotCompleted))
+                .collect(Collectors.toList());
+
+    }
+
+    public void oneStepExecution() throws MyException, InterruptedException {
+        executor = Executors.newFixedThreadPool(2);
+
+        java.util.List<ProgramState> programStatesList = removeCompletedProgramStates(this.repo.getProgramStatesList());
+
+        if (programStatesList.size() > 0) {
+
+            var memoryHeap = programStatesList.get(0).getHeap();
+            memoryHeap.setContent(safeGarbageCollection(getHeapAddressesFromSymbolTable(programStatesList.get(0).getSymbolTable().getAll().values()), programStatesList.get(0).getHeap().getContent()));
+            oneStepForAllPrograms(programStatesList);
+
+            programStatesList.stream()
+                    .filter(ProgramState::BooleanIsNotCompleted)
+                    .collect(Collectors.toList()).addAll(getCompletedPrograms(repo.getProgramStatesList()));
+            programStatesList = removeCompletedProgramStates(repo.getProgramStatesList());
+
+        }
+        executor.shutdown();
+        repo.setProgramStatesList(programStatesList);
+
     }
 
     void oneStepForAllPrograms(List<ProgramState> programStateList) throws InterruptedException {

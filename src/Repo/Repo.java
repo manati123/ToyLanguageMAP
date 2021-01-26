@@ -84,6 +84,7 @@ public class Repo implements IRepo {
         IList<IValue> output = program.getOutput();
         IDict<String, IValue> symbolTable = program.getSymbolTable();
         IDict<StringValue, BufferedReader> fileTable = program.getFileTable();
+
         try {
             PrintWriter logFile = new PrintWriter(new BufferedWriter(new FileWriter(this.logFilePath, true)));
             Writer.print(logFile,"PID: ",String.valueOf(program.getId()), "");
@@ -91,6 +92,7 @@ public class Repo implements IRepo {
             Writer.print(logFile, "SymTable:", symbolTable.toString(), ", |[{}\n]");
             Writer.print(logFile, "Out:", output.toString(), ", |[\\[\\]]");
             Writer.print(logFile, "FileTable:", fileTable.toString(), ", |[{}]");
+            Writer.print(logFile,"Lock table: ", program.getLockTable().toString(),"|[{}]");
             logFile.println("#########################################");
             logFile.close();
         } catch (IOException e) {

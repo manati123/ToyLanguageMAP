@@ -1,8 +1,8 @@
 package Model.Statements;
 
+
 import Model.ADT.Dict;
 import Model.ADT.IDict;
-import Model.ADT.IHeap;
 import Model.Exceptions.MyException;
 import Model.Expressions.Expression;
 import Model.ProgramState;
@@ -12,54 +12,55 @@ import Model.Value.IValue;
 import Model.Value.StringValue;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class OpenRFileStatement implements IStatement{
-    public Expression expression;
+public class OpenRFileStatement implements IStatement {
+    Expression expression;
 
-    public OpenRFileStatement(Expression _expression){
-        this.expression = _expression;
+    public OpenRFileStatement(Expression expression) {
+        this.expression = expression;
     }
 
     @Override
     public ProgramState execute(ProgramState state) throws MyException {
-        StringValue value = StringValueGetter.run(state,this.expression);
+        IDict<String, IValue> symbolTable = state.getSymbolTable();
         IDict<StringValue, BufferedReader> fileTable = state.getFileTable();
-        //IHeap<Integer, IValue> heap = state.getHeap();
-        if(value.get_type().equals(new StringType()))
-        {
-            StringValue stringVal = (StringValue)value;
-            if(fileTable.get(stringVal) == null){
-                try{
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(stringVal.getValue().replaceAll("\\s+","")));
-                fileTable.add(stringVal, bufferedReader);
-                }catch(FileNotFoundException exception){
-                    throw new MyException(exception.getMessage());
-                }
-        }
-        if(fileTable.isDefined(value)){
-            throw new MyException("Value is already defined!");
-        }
 
-        return null;
-        }
-        return null;
-    }
+        IValue value = expression.eval(symbolTable, state.getHeap());
 
-    @Override
-    public Dict<String, IType> typecheck(Dict<String, IType> typeEnv) throws MyException {
-        IType typeExp = this.expression.typecheck(typeEnv);
-        if(typeExp.equals(new StringType()))
-            return typeEnv;
+        if (value.get_type().equals(new StringType())){
+            if (fileTable.isDefined((StringValue) value)){
+                throw new MyException("The file is already opened");
+            }
+            BufferedReader fileDescriptor;
+            try{
+                String fileName = ((StringValue)value).getValue();
+                String path = new File(fileName).getAbsolutePath();
+                fileDescriptor = new BufferedReader(new FileReader(path));
+            } catch (IOException e) {
+                throw new MyException("File does not exist");
+            }
+            fileTable.add((StringValue)value, fileDescriptor);
+
+            return null;
+
+        }
         else
-            throw new MyException("Expression not going stringy!");
+            throw new MyException("Expression type is not a string");
     }
 
+    @Override
+    public Dict<String, IType> typecheck(Dict<String, IType> typeEnv) throws MyException{
+        IType type = expression.typecheck(typeEnv);
+        if(!type.equals(new StringType()))
+            throw new MyException("Expression is not a string");
+        return typeEnv;
+    }
 
     @Override
-    public String toString(){
-        return "open -> " + this.expression.toString();
+    public String toString() {
+        return "openRFile("+expression.toString()+")";
     }
 }

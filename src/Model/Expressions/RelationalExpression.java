@@ -63,7 +63,7 @@ public class RelationalExpression implements Expression{
         t2 = this.e2.typecheck(typeEnv);
         if(t1.equals(new IntegerType())){
             if(t2.equals(new IntegerType()))
-                return new IntegerType();
+                return new BooleanType();
             else throw new MyException("Second op is not an int");
         }
         else throw new MyException("First op is not an int");

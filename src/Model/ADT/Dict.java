@@ -1,6 +1,7 @@
 package Model.ADT;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +39,19 @@ public class Dict<K,T> implements IDict<K,T>, Serializable {
     public synchronized void remove(K removeKey) {
         this.dict.remove(removeKey);
     }
+
+    @Override
+    public ArrayList<ArrayList<String>> getElementsStrings() {
+        ArrayList<ArrayList<String>> elements = new ArrayList<>();
+        for (K key : this.dict.keySet()){
+            ArrayList<String> list = new ArrayList<>();
+            list.add(key.toString());
+            list.add(dict.get(key).toString());
+            elements.add(list);
+        }
+        return elements;
+    }
+
     @Override
     public synchronized void clr() {
         this.dict.clear();

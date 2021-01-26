@@ -1,5 +1,7 @@
 package Model.ADT;
 
+import java.util.Collection;
+
 public interface IStack<T> {
 
     T pop();
@@ -7,4 +9,6 @@ public interface IStack<T> {
     boolean empty();
 
     void clr();
+
+    Collection<? extends String> getElementsStrings();
 }

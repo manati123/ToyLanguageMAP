@@ -1,5 +1,6 @@
 package Model.ADT;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Stack<T> implements IStack<T> {
@@ -29,5 +30,14 @@ public class Stack<T> implements IStack<T> {
     @Override
     public String toString(){
         return this.stack.toString();
+    }
+
+    @Override
+    public ArrayList<String> getElementsStrings() {
+        ArrayList<String> elements = new ArrayList<>();
+        for (var element: this.stack) {
+            elements.add(element.toString());
+        }
+        return elements;
     }
 }

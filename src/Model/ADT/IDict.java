@@ -1,4 +1,5 @@
 package Model.ADT;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 /*
@@ -15,6 +16,7 @@ public interface IDict<K,T> {
     boolean isDefined(K keyValue);
     void update(K updateKey, T updateValue);
     void remove(K removeKey);
+    ArrayList<ArrayList<String>> getElementsStrings();
     void clr();
     Map<K,T> getAll();
    // Dict<K,T> clone();

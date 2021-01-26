@@ -42,10 +42,9 @@ public class AssignStatement implements  IStatement {
     public Dict<String, IType> typecheck(Dict<String, IType> typeEnv) throws MyException {
         IType typeVariable = typeEnv.get(this.ID);
         IType typeExpression = this.expression.typecheck(typeEnv);
-        if(typeVariable.equals(typeExpression))
-            return typeEnv;
-        else
+        if(!typeVariable.equals(typeExpression))
             throw new MyException("Right and left have different types");
+       return typeEnv;
     }
 
     @Override

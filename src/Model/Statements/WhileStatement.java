@@ -24,33 +24,36 @@ public class WhileStatement implements IStatement {
 
     @Override
     public ProgramState execute(ProgramState state) throws MyException {
-        IDict<String, IValue> symbolTable = state.getSymbolTable();
-        IHeap<Integer, IValue> heap = state.getHeap();
-        IStack<IStatement> executionStack = state.getExecutionStack();
-        IValue val = this.expression.eval(symbolTable,heap);
-        if(val.get_type() instanceof BooleanType){
-            if(((BooleanValue)val).getVal()){
-                executionStack.push(this);
-                executionStack.push(this.exec);
-            }
+        IValue conditionValue = this.expression.eval(state.getSymbolTable(), state.getHeap());
+
+        if (!(conditionValue.get_type() instanceof BooleanType))
+            throw new MyException(this.expression + "is not of BoolType");
+
+        if (((BooleanValue) conditionValue).getVal()) {
+            state.getExecutionStack().push(this);
+            state.getExecutionStack().push(this.exec);
         }
+
         return null;
     }
 
+
+
     @Override
-    public Dict<String, IType> typecheck(Dict<String, IType> typeEnv) throws MyException {
-        IType typeExp = this.expression.typecheck(typeEnv);
-        if(typeExp.equals(new BooleanType()))
-        {
-            this.exec.typecheck((Dict<String, IType>) typeEnv.deepClone());
-            return typeEnv;
+    public Dict<String, IType> typecheck(Dict<String, IType> typeEnv) throws MyException{
+        IType typeExpression = this.expression.typecheck(typeEnv);
+
+        if(!(typeExpression.equals(new BooleanType()))){
+            //System.out.println("Problem klan!");
+            throw new MyException("The condition of WHILE has not the type bool");
+
         }
-        else
-            throw new MyException("WHILE does not loop based on bool");
+        this.exec.typecheck(typeEnv);
+        return typeEnv;
     }
 
     @Override
     public String toString() {
-        return "(while(" + this.expression + ")" + this.exec + ")";
+        return "(while(||||" + this.expression + "|||||)" + this.exec + "||||)";
     }
 }

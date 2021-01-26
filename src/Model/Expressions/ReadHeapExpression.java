@@ -19,24 +19,17 @@ public class ReadHeapExpression implements Expression{
 
     @Override
     public IValue eval(IDict<String, IValue> table, IHeap<Integer, IValue> heap) throws MyException {
-        if(this.expression.eval(table,heap).get_type() instanceof RefType){
-            RefValue refValue = (RefValue) this.expression.eval(table,heap);
-            int address = refValue.getAddr();
-            System.out.println(address);
-            if(!heap.isDefined(address))
-                throw new MyException("Undefined address! -> line 24 ReadHeapExpression");
-            return heap.get(address);
-        }
-        else
-            throw new MyException("Not ref type! -> line 26 ReadHeapExpression");
-        /*try{
-            Object obj = new Object();
-            obj = this.expression.eval(table,heap);
-            System.out.println(obj.getClass());
-        return heap.get(((RefValue) this.expression.eval(table,heap)).getAddr());
-        }catch(ClassCastException exc){
-            throw new MyException(exc.getMessage());
-        }*/
+        IValue value = expression.eval(table, heap);
+
+        if(!(value.get_type() instanceof RefType))
+            throw new MyException(value + " is not of Reference type");
+
+        int address = ((RefValue)value).getAddr();
+
+        if(!heap.isDefined(address))
+            throw new MyException(value + " is not defined in the heap");
+
+        return heap.get(address);
     }
 
     @Override

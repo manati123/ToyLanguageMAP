@@ -1,5 +1,7 @@
 package Model.ADT;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 public interface IHeap<T, T1> {
@@ -11,4 +13,6 @@ public interface IHeap<T, T1> {
     void setContent(Map<T, T1> heap);
     Map<T, T1> getContent();
     boolean isDefined(T addr);
+
+    Collection<? extends ArrayList<String>> getElementsStrings();
 }
